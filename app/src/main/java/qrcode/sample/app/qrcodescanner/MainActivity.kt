@@ -1,6 +1,10 @@
 package qrcode.sample.app.qrcodescanner
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.budiyev.android.codescanner.AutoFocusMode
@@ -9,11 +13,28 @@ import com.budiyev.android.codescanner.CodeScannerView
 
 
 class MainActivity : AppCompatActivity() {
+
+    private val MY_PERMISSIONS_REQUEST_CAMERA = 101
+
     private lateinit var mCodeScanner: CodeScanner
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val scannerView = findViewById<CodeScannerView>(R.id.scanner_view)
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.CAMERA),
+                        MY_PERMISSIONS_REQUEST_CAMERA)
+            }
+
+        }
+
         // Use builder
         mCodeScanner = CodeScanner.builder()
                 /*camera can be specified by calling .camera(cameraId),
@@ -47,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         scannerView.setOnClickListener {
             mCodeScanner.startPreview()
         }
+
     }
 
     override fun onResume() {
